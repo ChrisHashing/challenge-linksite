@@ -1,0 +1,59 @@
+{
+  "theme": "nature",
+  "profile": {
+    "name": "Eco Warrior",
+    "title": "Environmental Activist & Nature Photographer",
+    "bio": "Passionate about protecting our planet and capturing its beauty through photography. Join me in making a difference for future generations.",
+    "avatar": "https://via.placeholder.com/150x150/228b22/ffffff?text=EW"
+  },
+  "links": [
+    {
+      "title": "🌱 Environmental Blog",
+      "url": "https://ecowarrior.blog",
+      "icon": "🌱",
+      "description": "Tips for sustainable living and environmental awareness"
+    },
+    {
+      "title": "📸 Photography Portfolio",
+      "url": "https://ecowarrior.photos",
+      "icon": "📸",
+      "description": "Nature photography and wildlife shots"
+    },
+    {
+      "title": "🌍 Climate Action",
+      "url": "https://ecowarrior.org/action",
+      "icon": "🌍",
+      "description": "Join our climate action initiatives"
+    },
+    {
+      "title": "🌿 Sustainable Living Guide",
+      "url": "https://ecowarrior.org/guide",
+      "icon": "🌿",
+      "description": "Practical tips for eco-friendly lifestyle"
+    },
+    {
+      "title": "📚 Educational Resources",
+      "url": "https://ecowarrior.org/resources",
+      "icon": "📚",
+      "description": "Learn about environmental conservation"
+    },
+    {
+      "title": "🤝 Volunteer Opportunities",
+      "url": "https://ecowarrior.org/volunteer",
+      "icon": "🤝",
+      "description": "Get involved in local environmental projects"
+    }
+  ],
+  "social": {
+    "instagram": "ecowarrior",
+    "twitter": "ecowarrior",
+    "youtube": "ecowarrior",
+    "linkedin": "ecowarrior"
+  },
+  "customization": {
+    "background": "linear-gradient(135deg, #2d5016 0%, #4a7c59 50%, #8fbc8f 100%)",
+    "accentColor": "#228b22",
+    "textColor": "#f5f5dc",
+    "linkColor": "#90ee90"
+  }
+}

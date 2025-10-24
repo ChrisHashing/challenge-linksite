@@ -1,0 +1,59 @@
+{
+  "theme": "vintage",
+  "profile": {
+    "name": "Vintage Collector",
+    "title": "Antique Dealer & History Enthusiast",
+    "bio": "Preserving the past, one treasure at a time. Specializing in vintage collectibles, antiques, and historical artifacts from the golden age.",
+    "avatar": "https://via.placeholder.com/150x150/cd853f/ffffff?text=VC"
+  },
+  "links": [
+    {
+      "title": "🏺 Antique Shop",
+      "url": "https://vintagecollector.shop",
+      "icon": "🏺",
+      "description": "Browse our curated collection of vintage treasures"
+    },
+    {
+      "title": "📚 History Blog",
+      "url": "https://vintagecollector.blog",
+      "icon": "📚",
+      "description": "Stories behind the artifacts and their historical significance"
+    },
+    {
+      "title": "🎭 Vintage Fashion",
+      "url": "https://vintagecollector.fashion",
+      "icon": "🎭",
+      "description": "Authentic vintage clothing and accessories"
+    },
+    {
+      "title": "📖 Appraisal Services",
+      "url": "https://vintagecollector.appraisal",
+      "icon": "📖",
+      "description": "Professional antique and collectible appraisals"
+    },
+    {
+      "title": "🎪 Estate Sales",
+      "url": "https://vintagecollector.estates",
+      "icon": "🎪",
+      "description": "Upcoming estate sales and auction events"
+    },
+    {
+      "title": "📞 Contact",
+      "url": "mailto:info@vintagecollector.com",
+      "icon": "📞",
+      "description": "Inquiries about specific items or services"
+    }
+  ],
+  "social": {
+    "instagram": "vintagecollector",
+    "facebook": "vintagecollector",
+    "pinterest": "vintagecollector",
+    "twitter": "vintagecollector"
+  },
+  "customization": {
+    "background": "linear-gradient(135deg, #8b4513 0%, #cd853f 50%, #daa520 100%)",
+    "accentColor": "#cd853f",
+    "textColor": "#fff8dc",
+    "linkColor": "#ffd700"
+  }
+}

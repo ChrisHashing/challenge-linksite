@@ -1,0 +1,53 @@
+{
+  "theme": "dark",
+  "profile": {
+    "name": "CYBER_DEV",
+    "title": "Full Stack Hacker",
+    "bio": "Building the future with code, one line at a time. Specializing in blockchain, AI, and cyber security solutions.",
+    "avatar": "https://via.placeholder.com/150x150/00ffff/000000?text=CD"
+  },
+  "links": [
+    {
+      "title": "🚀 Portfolio",
+      "url": "https://cyberdev.tech",
+      "icon": "🚀",
+      "description": "My latest projects and code experiments"
+    },
+    {
+      "title": "💻 GitHub",
+      "url": "https://github.com/cyberdev",
+      "icon": "💻",
+      "description": "Open source contributions and repositories"
+    },
+    {
+      "title": "🔐 Security Blog",
+      "url": "https://cyberdev.tech/blog",
+      "icon": "🔐",
+      "description": "Cybersecurity insights and tutorials"
+    },
+    {
+      "title": "🤖 AI Projects",
+      "url": "https://cyberdev.tech/ai",
+      "icon": "🤖",
+      "description": "Machine learning and AI experiments"
+    },
+    {
+      "title": "📧 Contact",
+      "url": "mailto:contact@cyberdev.tech",
+      "icon": "📧",
+      "description": "Get in touch for collaborations"
+    }
+  ],
+  "social": {
+    "twitter": "cyberdev",
+    "github": "cyberdev",
+    "linkedin": "cyberdev",
+    "discord": "cyberdev"
+  },
+  "customization": {
+    "background": "linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%)",
+    "accentColor": "#00ffff",
+    "textColor": "#ffffff",
+    "linkColor": "#ff00ff"
+  }
+}

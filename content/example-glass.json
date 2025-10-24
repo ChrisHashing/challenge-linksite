@@ -1,0 +1,60 @@
+{
+  "theme": "glass",
+  "profile": {
+    "name": "Modern Designer",
+    "title": "UI/UX Designer & Digital Artist",
+    "bio": "Creating beautiful, intuitive digital experiences with a focus on modern design principles and user-centered solutions.",
+    "avatar": "https://via.placeholder.com/150x150/6366f1/ffffff?text=MD"
+  },
+  "links": [
+    {
+      "title": "🎨 Design Portfolio",
+      "url": "https://moderndesigner.portfolio",
+      "icon": "🎨",
+      "description": "Explore my latest design projects and case studies"
+    },
+    {
+      "title": "💡 Design System",
+      "url": "https://moderndesigner.system",
+      "icon": "💡",
+      "description": "Comprehensive design system and component library"
+    },
+    {
+      "title": "📱 Mobile Apps",
+      "url": "https://moderndesigner.apps",
+      "icon": "📱",
+      "description": "iOS and Android app designs and prototypes"
+    },
+    {
+      "title": "🌐 Web Projects",
+      "url": "https://moderndesigner.web",
+      "icon": "🌐",
+      "description": "Modern web design and development projects"
+    },
+    {
+      "title": "📚 Design Resources",
+      "url": "https://moderndesigner.resources",
+      "icon": "📚",
+      "description": "Free design tools, templates, and inspiration"
+    },
+    {
+      "title": "💼 Hire Me",
+      "url": "mailto:hello@moderndesigner.com",
+      "icon": "💼",
+      "description": "Let's work together on your next project"
+    }
+  ],
+  "social": {
+    "dribbble": "moderndesigner",
+    "behance": "moderndesigner",
+    "instagram": "moderndesigner",
+    "linkedin": "moderndesigner",
+    "twitter": "moderndesigner"
+  },
+  "customization": {
+    "background": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    "accentColor": "#6366f1",
+    "textColor": "#ffffff",
+    "linkColor": "#e0e7ff"
+  }
+}
