@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Link-in-Bio Builder - Web Editor</title>
+    <meta name="description" content="Create your own link-in-bio page with our easy-to-use web editor">
+    
+    <!-- Preload fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🔗%3C/text%3E%3C/svg%3E">
+    
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            min-height: 100vh;
+        }
+        
+        .editor-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            height: fit-content;
+        }
+        
+        .preview-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            position: sticky;
+            top: 2rem;
+            height: fit-content;
+        }
+        
+        .panel-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            transition: border-color 0.2s ease;
+        }
+        
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: #6366f1;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5856eb;
+        }
+        
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+        
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+        }
+        
+        .links-section {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .link-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        
+        .link-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .link-item-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .link-item-title {
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .link-item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .social-section {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        
+        .social-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .customization-section {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        
+        .color-input {
+            width: 100%;
+            height: 40px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .preview-container {
+            max-width: 400px;
+            margin: 0 auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            background: white;
+        }
+        
+        .preview-iframe {
+            width: 100%;
+            min-height: 600px;
+            border: none;
+            overflow: auto;
+        }
+        
+        .actions-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .theme-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .theme-option {
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: white;
+        }
+        
+        .theme-option:hover {
+            border-color: #6366f1;
+        }
+        
+        .theme-option.selected {
+            border-color: #6366f1;
+            background: #f0f4ff;
+        }
+        
+        .theme-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 0 auto 0.5rem;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .theme-name {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            color: #64748b;
+        }
+        
+        .error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .success {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .preview-panel {
+                position: static;
+            }
+        }
+        
+        /* Background Customization Styles */
+        .background-type-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .background-type-option {
+            flex: 1;
+            cursor: pointer;
+        }
+        
+        .background-type-option input[type="radio"] {
+            display: none;
+        }
+        
+        .background-type-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            background: white;
+        }
+        
+        .background-type-option input[type="radio"]:checked + .background-type-label {
+            border-color: #6366f1;
+            background: #f0f4ff;
+        }
+        
+        .background-type-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .solid-preview {
+            background: #ffffff;
+        }
+        
+        .gradient-preview {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+        }
+        
+        .background-section {
+            margin-bottom: 1rem;
+        }
+        
+        .color-picker-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .gradient-colors {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .gradient-color-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .gradient-preview-large {
+            width: 100%;
+            height: 60px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+        }
+        
+        .background-preview-large {
+            width: 100%;
+            height: 60px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+        }
+        
+        @media (max-width: 640px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .social-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions-bar {
+                flex-direction: column;
+            }
+            
+            .background-type-selector {
+                flex-direction: column;
+            }
+            
+            .color-picker-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .color-picker-container input[type="text"] {
+                margin-left: 0 !important;
+                margin-top: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Editor Panel -->
+        <div class="editor-panel">
+            <h1 class="panel-title">
+                🔗 Link-in-Bio Builder
+            </h1>
+            
+            <div id="message-container"></div>
+            
+            <!-- Actions Bar -->
+            <div class="actions-bar">
+                <button class="btn btn-primary" onclick="loadTemplate()">
+                    📄 Load Template
+                </button>
+                <button class="btn btn-secondary" onclick="exportConfig()">
+                    💾 Export JSON
+                </button>
+                <button class="btn btn-secondary" onclick="importConfig()">
+                    📥 Import JSON
+                </button>
+                <button class="btn btn-success" onclick="previewPage()">
+                    👁️ Preview
+                </button>
+            </div>
+            
+            <!-- Theme Selection -->
+            <div class="form-group">
+                <label class="form-label">Choose Theme</label>
+                <div class="theme-selector" id="theme-selector">
+                    <!-- Theme options will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Profile Section -->
+            <div class="form-group">
+                <h3 style="margin-bottom: 1rem; color: #374151;">Profile Information</h3>
+                <div class="form-row">
+                    <div>
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-input" id="profile-name" placeholder="Your Name">
+                    </div>
+                    <div>
+                        <label class="form-label">Title</label>
+                        <input type="text" class="form-input" id="profile-title" placeholder="Your Title">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bio</label>
+                    <textarea class="form-textarea" id="profile-bio" placeholder="Tell people about yourself..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Avatar URL</label>
+                    <input type="url" class="form-input" id="profile-avatar" placeholder="https://example.com/avatar.jpg">
+                </div>
+            </div>
+            
+            <!-- Links Section -->
+            <div class="form-group">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3 style="color: #374151;">Links</h3>
+                    <button class="btn btn-primary btn-small" onclick="addLink()">+ Add Link</button>
+                </div>
+                <div id="links-container">
+                    <!-- Links will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Social Section -->
+            <div class="form-group">
+                <h3 style="margin-bottom: 1rem; color: #374151;">Social Media</h3>
+                <div class="social-section">
+                    <div class="social-grid">
+                        <div>
+                            <label class="form-label">Twitter</label>
+                            <input type="text" class="form-input" id="social-twitter" placeholder="username">
+                        </div>
+                        <div>
+                            <label class="form-label">GitHub</label>
+                            <input type="text" class="form-input" id="social-github" placeholder="username">
+                        </div>
+                        <div>
+                            <label class="form-label">LinkedIn</label>
+                            <input type="text" class="form-input" id="social-linkedin" placeholder="username">
+                        </div>
+                        <div>
+                            <label class="form-label">Instagram</label>
+                            <input type="text" class="form-input" id="social-instagram" placeholder="username">
+                        </div>
+                        <div>
+                            <label class="form-label">YouTube</label>
+                            <input type="text" class="form-input" id="social-youtube" placeholder="username">
+                        </div>
+                        <div>
+                            <label class="form-label">Discord</label>
+                            <input type="text" class="form-input" id="social-discord" placeholder="username">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Customization Section -->
+            <div class="form-group">
+                <h3 style="margin-bottom: 1rem; color: #374151;">Customization</h3>
+                <div class="customization-section">
+                    <!-- Background Type Selection -->
+                    <div class="form-group">
+                        <label class="form-label">Background Type</label>
+                        <div class="background-type-selector">
+                            <label class="background-type-option">
+                                <input type="radio" name="background-type" value="solid" id="bg-solid" checked>
+                                <span class="background-type-label">
+                                    <div class="background-type-preview solid-preview"></div>
+                                    Solid Color
+                                </span>
+                            </label>
+                            <label class="background-type-option">
+                                <input type="radio" name="background-type" value="gradient" id="bg-gradient">
+                                <span class="background-type-label">
+                                    <div class="background-type-preview gradient-preview"></div>
+                                    Gradient
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Solid Color Background -->
+                    <div id="solid-background-section" class="background-section">
+                        <div class="form-group">
+                            <label class="form-label">Background Color</label>
+                            <div class="color-picker-container">
+                                <input type="color" class="color-input" id="custom-background-solid" value="#ffffff">
+                                <input type="text" class="form-input" id="custom-background-solid-hex" placeholder="#ffffff" style="margin-left: 0.5rem;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gradient Background -->
+                    <div id="gradient-background-section" class="background-section" style="display: none;">
+                        <div class="form-group">
+                            <label class="form-label">Gradient Direction</label>
+                            <select class="form-select" id="gradient-direction">
+                                <option value="to right">Left to Right</option>
+                                <option value="to left">Right to Left</option>
+                                <option value="to bottom">Top to Bottom</option>
+                                <option value="to top">Bottom to Top</option>
+                                <option value="to bottom right">Top Left to Bottom Right</option>
+                                <option value="to bottom left">Top Right to Bottom Left</option>
+                                <option value="to top right">Bottom Left to Top Right</option>
+                                <option value="to top left">Bottom Right to Top Left</option>
+                                <option value="45deg">45 Degrees</option>
+                                <option value="90deg">90 Degrees</option>
+                                <option value="135deg">135 Degrees</option>
+                                <option value="180deg">180 Degrees</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Gradient Colors</label>
+                            <div class="gradient-colors">
+                                <div class="gradient-color-item">
+                                    <input type="color" class="color-input" id="gradient-color-1" value="#667eea">
+                                    <input type="text" class="form-input" id="gradient-color-1-hex" placeholder="#667eea">
+                                    <button class="btn btn-danger btn-small" onclick="editor.removeGradientColor(1)" style="display: none;">Remove</button>
+                                </div>
+                                <div class="gradient-color-item">
+                                    <input type="color" class="color-input" id="gradient-color-2" value="#764ba2">
+                                    <input type="text" class="form-input" id="gradient-color-2-hex" placeholder="#764ba2">
+                                    <button class="btn btn-danger btn-small" onclick="editor.removeGradientColor(2)">Remove</button>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary btn-small" onclick="editor.addGradientColor()" style="margin-top: 0.5rem;">+ Add Color</button>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Gradient Preview</label>
+                            <div id="gradient-preview" class="gradient-preview-large"></div>
+                        </div>
+                    </div>
+
+                    <!-- Other Colors -->
+                    <div class="form-row">
+                        <div>
+                            <label class="form-label">Accent Color</label>
+                            <div class="color-picker-container">
+                                <input type="color" class="color-input" id="custom-accent">
+                                <input type="text" class="form-input" id="custom-accent-hex" placeholder="#6366f1" style="margin-left: 0.5rem;">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="form-label">Text Color</label>
+                            <div class="color-picker-container">
+                                <input type="color" class="color-input" id="custom-text">
+                                <input type="text" class="form-input" id="custom-text-hex" placeholder="#ffffff" style="margin-left: 0.5rem;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div>
+                            <label class="form-label">Link Color</label>
+                            <div class="color-picker-container">
+                                <input type="color" class="color-input" id="custom-link">
+                                <input type="text" class="form-input" id="custom-link-hex" placeholder="#fbbf24" style="margin-left: 0.5rem;">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="form-label">Background Preview</label>
+                            <div id="background-preview" class="background-preview-large"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Preview Panel -->
+        <div class="preview-panel">
+            <h2 class="panel-title">
+                👁️ Live Preview
+            </h2>
+            <div class="preview-container">
+                <div id="preview-iframe" class="preview-iframe"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Hidden file input for import -->
+    <input type="file" id="import-input" accept=".json" style="display: none;" onchange="handleImport(event)">
+    
+    <script src="editor.js"></script>
+</body>
+</html>
