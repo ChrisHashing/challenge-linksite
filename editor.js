@@ -22,6 +22,7 @@ class LinkBioEditor {
         this.gradientColors = ['#667eea', '#764ba2'];
         this.gradientDirection = 'to right';
         this.backgroundType = 'solid';
+        this.customizationEnabled = false;
         this.init();
     }
 
@@ -84,6 +85,11 @@ class LinkBioEditor {
         });
         document.querySelector(`[data-theme="${themeName}"]`).classList.add('selected');
         
+        // If customization is disabled, clear custom colors and use theme defaults
+        if (!this.customizationEnabled) {
+            this.clearCustomColors();
+        }
+        
         this.updatePreview();
     }
 
@@ -137,7 +143,9 @@ class LinkBioEditor {
             const hexInput = document.getElementById('custom-background-solid-hex');
             hexInput.value = e.target.value;
             this.updateBackgroundPreview();
-            this.updatePreview();
+            if (this.customizationEnabled) {
+                this.updatePreview();
+            }
         });
 
         document.getElementById('custom-background-solid-hex').addEventListener('input', (e) => {
@@ -145,7 +153,9 @@ class LinkBioEditor {
             if (this.isValidHex(e.target.value)) {
                 colorInput.value = e.target.value;
                 this.updateBackgroundPreview();
-                this.updatePreview();
+                if (this.customizationEnabled) {
+                    this.updatePreview();
+                }
             }
         });
 
@@ -154,11 +164,20 @@ class LinkBioEditor {
             this.gradientDirection = e.target.value;
             this.updateGradientPreview();
             this.updateBackgroundPreview();
-            this.updatePreview();
+            if (this.customizationEnabled) {
+                this.updatePreview();
+            }
         });
 
         // Gradient colors
         this.setupGradientColorListeners();
+
+        // Customization toggle
+        document.getElementById('enable-customization').addEventListener('change', (e) => {
+            this.customizationEnabled = e.target.checked;
+            this.toggleCustomizationSection();
+            this.updatePreview();
+        });
 
         // Other color inputs with hex sync
         this.setupColorInputSync('custom-accent', 'custom-accent-hex');
@@ -198,13 +217,25 @@ class LinkBioEditor {
         });
 
         // Customization
-        this.applyBackgroundFromConfig();
-        document.getElementById('custom-accent').value = this.config.customization?.accentColor || '#6366f1';
-        document.getElementById('custom-accent-hex').value = this.config.customization?.accentColor || '#6366f1';
-        document.getElementById('custom-text').value = this.config.customization?.textColor || '#ffffff';
-        document.getElementById('custom-text-hex').value = this.config.customization?.textColor || '#ffffff';
-        document.getElementById('custom-link').value = this.config.customization?.linkColor || '#fbbf24';
-        document.getElementById('custom-link-hex').value = this.config.customization?.linkColor || '#fbbf24';
+        // Check if customizations exist to determine toggle state
+        const hasCustomizations = this.config.customization && Object.keys(this.config.customization).length > 0;
+        this.customizationEnabled = hasCustomizations;
+        document.getElementById('enable-customization').checked = this.customizationEnabled;
+        
+        if (hasCustomizations) {
+            this.applyBackgroundFromConfig();
+            document.getElementById('custom-accent').value = this.config.customization?.accentColor || '#6366f1';
+            document.getElementById('custom-accent-hex').value = this.config.customization?.accentColor || '#6366f1';
+            document.getElementById('custom-text').value = this.config.customization?.textColor || '#ffffff';
+            document.getElementById('custom-text-hex').value = this.config.customization?.textColor || '#ffffff';
+            document.getElementById('custom-link').value = this.config.customization?.linkColor || '#fbbf24';
+            document.getElementById('custom-link-hex').value = this.config.customization?.linkColor || '#fbbf24';
+        } else {
+            // Use theme defaults
+            this.clearCustomColors();
+        }
+        
+        this.toggleCustomizationSection();
 
         // Links
         this.renderLinks();
@@ -296,17 +327,27 @@ class LinkBioEditor {
         const config = this.config;
         const theme = config.theme || 'minimal';
         
-        // Apply customizations
+        // Apply customizations or theme defaults
         const customizations = config.customization || {};
-        let background;
-        if (this.backgroundType === 'solid') {
-            background = document.getElementById('custom-background-solid')?.value || customizations.background || this.getThemeDefaultBackground(theme);
+        let background, accentColor, textColor, linkColor;
+        
+        if (this.customizationEnabled) {
+            // Use custom colors
+            if (this.backgroundType === 'solid') {
+                background = document.getElementById('custom-background-solid')?.value || customizations.background || this.getThemeDefaultBackground(theme);
+            } else {
+                background = this.generateGradientString();
+            }
+            accentColor = customizations.accentColor || this.getThemeDefaultAccent(theme);
+            textColor = customizations.textColor || this.getThemeDefaultText(theme);
+            linkColor = customizations.linkColor || this.getThemeDefaultLink(theme);
         } else {
-            background = this.generateGradientString();
+            // Use theme defaults
+            background = this.getThemeDefaultBackground(theme);
+            accentColor = this.getThemeDefaultAccent(theme);
+            textColor = this.getThemeDefaultText(theme);
+            linkColor = this.getThemeDefaultLink(theme);
         }
-        const accentColor = customizations.accentColor || this.getThemeDefaultAccent(theme);
-        const textColor = customizations.textColor || this.getThemeDefaultText(theme);
-        const linkColor = customizations.linkColor || this.getThemeDefaultLink(theme);
         
         return `
             <div class="preview-content" style="
@@ -532,7 +573,9 @@ class LinkBioEditor {
                 this.gradientColors[index - 1] = e.target.value;
                 this.updateGradientPreview();
                 this.updateBackgroundPreview();
-                this.updatePreview();
+                if (this.customizationEnabled) {
+                    this.updatePreview();
+                }
             });
 
             hexInput.addEventListener('input', (e) => {
@@ -541,7 +584,9 @@ class LinkBioEditor {
                     this.gradientColors[index - 1] = e.target.value;
                     this.updateGradientPreview();
                     this.updateBackgroundPreview();
-                    this.updatePreview();
+                    if (this.customizationEnabled) {
+                        this.updatePreview();
+                    }
                 }
             });
         }
@@ -554,15 +599,19 @@ class LinkBioEditor {
         if (colorInput && hexInput) {
             colorInput.addEventListener('input', (e) => {
                 hexInput.value = e.target.value;
-                this.config.customization[colorInputId.replace('custom-', '')] = e.target.value;
-                this.updatePreview();
+                if (this.customizationEnabled) {
+                    this.config.customization[colorInputId.replace('custom-', '')] = e.target.value;
+                    this.updatePreview();
+                }
             });
 
             hexInput.addEventListener('input', (e) => {
                 if (this.isValidHex(e.target.value)) {
                     colorInput.value = e.target.value;
-                    this.config.customization[colorInputId.replace('custom-', '')] = e.target.value;
-                    this.updatePreview();
+                    if (this.customizationEnabled) {
+                        this.config.customization[colorInputId.replace('custom-', '')] = e.target.value;
+                        this.updatePreview();
+                    }
                 }
             });
         }
@@ -690,12 +739,88 @@ class LinkBioEditor {
         this.updateBackgroundPreview();
     }
 
-    exportConfig() {
-        // Update the config with current background settings
-        if (this.backgroundType === 'solid') {
-            this.config.customization.background = document.getElementById('custom-background-solid').value;
+    toggleCustomizationSection() {
+        const customizationSection = document.getElementById('customization-section');
+        if (this.customizationEnabled) {
+            customizationSection.classList.remove('disabled');
+            customizationSection.classList.add('enabled');
+            customizationSection.style.opacity = '1';
+            customizationSection.style.pointerEvents = 'auto';
         } else {
-            this.config.customization.background = this.generateGradientString();
+            customizationSection.classList.remove('enabled');
+            customizationSection.classList.add('disabled');
+            customizationSection.style.opacity = '0.5';
+            customizationSection.style.pointerEvents = 'none';
+            // Clear custom colors and use theme defaults
+            this.clearCustomColors();
+        }
+    }
+
+    clearCustomColors() {
+        // Clear customization from config
+        this.config.customization = {};
+        
+        // Reset UI to theme defaults
+        const theme = this.currentTheme;
+        const defaultAccent = this.getThemeDefaultAccent(theme);
+        const defaultText = this.getThemeDefaultText(theme);
+        const defaultLink = this.getThemeDefaultLink(theme);
+        
+        // Update color inputs to theme defaults
+        document.getElementById('custom-accent').value = defaultAccent;
+        document.getElementById('custom-accent-hex').value = defaultAccent;
+        document.getElementById('custom-text').value = defaultText;
+        document.getElementById('custom-text-hex').value = defaultText;
+        document.getElementById('custom-link').value = defaultLink;
+        document.getElementById('custom-link-hex').value = defaultLink;
+        
+        // Reset background to theme default
+        const defaultBackground = this.getThemeDefaultBackground(theme);
+        if (defaultBackground.startsWith('linear-gradient')) {
+            // Parse gradient and set up gradient UI
+            this.backgroundType = 'gradient';
+            document.getElementById('bg-gradient').checked = true;
+            this.parseAndSetGradient(defaultBackground);
+        } else {
+            // Set solid color
+            this.backgroundType = 'solid';
+            document.getElementById('bg-solid').checked = true;
+            document.getElementById('custom-background-solid').value = defaultBackground;
+            document.getElementById('custom-background-solid-hex').value = defaultBackground;
+        }
+        
+        this.toggleBackgroundSections();
+        this.updateGradientPreview();
+        this.updateBackgroundPreview();
+    }
+
+    parseAndSetGradient(gradientString) {
+        // Parse gradient string and set up the gradient UI
+        const match = gradientString.match(/linear-gradient\(([^,]+),\s*(.+)\)/);
+        if (match) {
+            const direction = match[1].trim();
+            const colors = match[2].split(',').map(c => c.trim());
+            
+            this.gradientDirection = direction;
+            this.gradientColors = colors;
+            
+            document.getElementById('gradient-direction').value = direction;
+            this.renderGradientColors();
+        }
+    }
+
+    exportConfig() {
+        // Only include customizations if they're enabled
+        if (this.customizationEnabled) {
+            // Update the config with current background settings
+            if (this.backgroundType === 'solid') {
+                this.config.customization.background = document.getElementById('custom-background-solid').value;
+            } else {
+                this.config.customization.background = this.generateGradientString();
+            }
+        } else {
+            // Clear customizations when using theme defaults
+            this.config.customization = {};
         }
         
         const configJSON = JSON.stringify(this.config, null, 2);

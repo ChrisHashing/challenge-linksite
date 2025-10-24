@@ -416,6 +416,74 @@
             background: #ffffff;
         }
         
+        /* Toggle Switch Styles */
+        .customization-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: #6366f1;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+        
+        .toggle-label {
+            font-size: 0.875rem;
+            color: #374151;
+            font-weight: 500;
+        }
+        
+        .customization-section.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .customization-section.enabled {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
         @media (max-width: 640px) {
             .form-row {
                 grid-template-columns: 1fr;
@@ -548,8 +616,17 @@
             
             <!-- Customization Section -->
             <div class="form-group">
-                <h3 style="margin-bottom: 1rem; color: #374151;">Customization</h3>
-                <div class="customization-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3 style="color: #374151; margin: 0;">Customization</h3>
+                    <div class="customization-toggle">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="enable-customization">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="toggle-label">Enable Custom Colors</span>
+                    </div>
+                </div>
+                <div class="customization-section" id="customization-section" style="opacity: 0.5; pointer-events: none;">
                     <!-- Background Type Selection -->
                     <div class="form-group">
                         <label class="form-label">Background Type</label>
