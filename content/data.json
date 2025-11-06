@@ -1,5 +1,6 @@
 {
-  "theme": "dark",
+  "theme": "lensa",
+  "iconSet": "default",
   "profile": {
     "name": "Your Name",
     "title": "Your Title or Profession",
@@ -32,6 +33,7 @@
     "linkedin": "yourhandle"
   },
   "customization": {
+    "enabled": false,
     "background": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
     "accentColor": "#6366f1",
     "textColor": "#ffffff",

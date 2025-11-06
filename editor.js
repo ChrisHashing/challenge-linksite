@@ -15,7 +15,8 @@ class LinkBioEditor {
             { name: 'dark', display: 'Dark', color: '#0a0a0a' },
             { name: 'nature', display: 'Nature', color: '#228b22' },
             { name: 'vintage', display: 'Vintage', color: '#cd853f' },
-            { name: 'glass', display: 'Glass', color: '#667eea' }
+            { name: 'glass', display: 'Glass', color: '#667eea' },
+            { name: 'lensa', display: 'Lensa', color: '#6A0DAD' }
         ];
         this.currentTheme = 'minimal';
         this.previewTimeout = null;
@@ -36,6 +37,7 @@ class LinkBioEditor {
     getDefaultConfig() {
         return {
             theme: 'minimal',
+            iconSet: 'default',
             profile: {
                 name: '',
                 title: '',
@@ -159,6 +161,25 @@ class LinkBioEditor {
             }
         });
 
+        // Container background color
+        document.getElementById('custom-container-background').addEventListener('input', (e) => {
+            const hexInput = document.getElementById('custom-container-background-hex');
+            hexInput.value = e.target.value;
+            if (this.customizationEnabled) {
+                this.updatePreview();
+            }
+        });
+
+        document.getElementById('custom-container-background-hex').addEventListener('input', (e) => {
+            const colorInput = document.getElementById('custom-container-background');
+            if (this.isValidHex(e.target.value)) {
+                colorInput.value = e.target.value;
+                if (this.customizationEnabled) {
+                    this.updatePreview();
+                }
+            }
+        });
+
         // Gradient direction
         document.getElementById('gradient-direction').addEventListener('change', (e) => {
             this.gradientDirection = e.target.value;
@@ -178,6 +199,15 @@ class LinkBioEditor {
             this.toggleCustomizationSection();
             this.updatePreview();
         });
+
+        // Icon Set selector
+        const iconSetSelect = document.getElementById('icon-set-select');
+        if (iconSetSelect) {
+            iconSetSelect.addEventListener('change', (e) => {
+                this.config.iconSet = e.target.value;
+                this.updatePreview();
+            });
+        }
 
         // Other color inputs with hex sync
         this.setupColorInputSync('custom-accent', 'custom-accent-hex');
@@ -209,6 +239,12 @@ class LinkBioEditor {
 
         // Theme
         this.selectTheme(this.config.theme || 'minimal');
+        
+        // Icon Set
+        const iconSetSelect = document.getElementById('icon-set-select');
+        if (iconSetSelect) {
+            iconSetSelect.value = this.config.iconSet || 'default';
+        }
 
         // Social
         Object.entries(this.config.social || {}).forEach(([platform, handle]) => {
@@ -217,9 +253,11 @@ class LinkBioEditor {
         });
 
         // Customization
-        // Check if customizations exist to determine toggle state
+        // Check if customizations exist and are enabled
+        // enabled flag defaults to true for backward compatibility
         const hasCustomizations = this.config.customization && Object.keys(this.config.customization).length > 0;
-        this.customizationEnabled = hasCustomizations;
+        const isEnabled = hasCustomizations && (this.config.customization.enabled !== false);
+        this.customizationEnabled = isEnabled;
         document.getElementById('enable-customization').checked = this.customizationEnabled;
         
         if (hasCustomizations) {
@@ -349,18 +387,39 @@ class LinkBioEditor {
             linkColor = this.getThemeDefaultLink(theme);
         }
         
+        // Get container background
+        const isLensaTheme = theme === 'lensa';
+        const containerBackground = isLensaTheme ? 
+            'transparent' : 
+            (this.customizationEnabled ? 
+                (document.getElementById('custom-container-background')?.value || customizations.containerBackground || '#ffffff') : 
+                '#ffffff');
+        
+        const containerStyle = isLensaTheme ? 
+            'background: transparent; box-shadow: none;' : 
+            `background: ${containerBackground}; border-radius: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);`;
+        
         return `
             <div class="preview-content" style="
                 background: ${background};
                 color: ${textColor};
                 min-height: 600px;
-                padding: 2rem 1rem;
+                padding: 1.25rem;
                 font-family: 'Inter', sans-serif;
-                border-radius: 12px;
                 position: relative;
                 overflow: hidden;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             ">
-                <div style="max-width: 400px; margin: 0 auto;">
+                <div style="
+                    width: 100%;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    ${containerStyle}
+                    padding: 2rem;
+                    min-height: calc(100vh - 4rem);
+                ">
                     <!-- Profile Section -->
                     <div style="text-align: center; margin-bottom: 2rem;">
                         ${config.profile?.avatar ? `
@@ -390,6 +449,43 @@ class LinkBioEditor {
                                 font-weight: 500;
                             ">${config.profile.title}</h2>
                         ` : ''}
+                        
+                        <!-- Social Section (after title, before bio) -->
+                        ${Object.keys(config.social || {}).length > 0 ? `
+                            <div style="
+                                display: flex;
+                                justify-content: center;
+                                gap: 1rem;
+                                margin: 1rem 0;
+                            ">
+                                ${Object.entries(config.social).map(([platform, handle]) => {
+                                    if (!handle) return '';
+                                    const platformData = this.getSocialPlatformData(platform);
+                                    const iconSet = config.iconSet || 'default';
+                                    const iconPath = platformData.iconFile ? `./icons/${iconSet}/${platformData.iconFile}` : null;
+                                    return `
+                                        <a href="${platformData.url}${handle}" style="
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            width: 40px;
+                                            height: 40px;
+                                            background: rgba(255, 255, 255, 0.1);
+                                            border: 1px solid rgba(255, 255, 255, 0.2);
+                                            border-radius: 50%;
+                                            color: ${textColor};
+                                            text-decoration: none;
+                                            transition: all 0.3s ease;
+                                            font-size: 1rem;
+                                        " onmouseover="this.style.transform='translateY(-2px) scale(1.1)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.15)'" 
+                                           onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='none'">
+                                            ${iconPath ? `<img src="${iconPath}" alt="${platform}" style="width: 20px; height: 20px; object-fit: contain;" onerror="this.style.display='none'; this.parentElement.textContent='${platformData.icon}'">` : platformData.icon}
+                                        </a>
+                                    `;
+                                }).join('')}
+                            </div>
+                        ` : ''}
+                        
                         ${config.profile?.bio ? `
                             <p style="
                                 font-size: 0.9rem;
@@ -451,40 +547,6 @@ class LinkBioEditor {
                             `).join('')}
                         </div>
                     ` : ''}
-                    
-                    <!-- Social Section -->
-                    ${Object.keys(config.social || {}).length > 0 ? `
-                        <div style="
-                            display: flex;
-                            justify-content: center;
-                            gap: 1rem;
-                            margin-top: 2rem;
-                        ">
-                            ${Object.entries(config.social).map(([platform, handle]) => {
-                                if (!handle) return '';
-                                const platformData = this.getSocialPlatformData(platform);
-                                return `
-                                    <a href="${platformData.url}${handle}" style="
-                                        display: flex;
-                                        align-items: center;
-                                        justify-content: center;
-                                        width: 48px;
-                                        height: 48px;
-                                        background: rgba(255, 255, 255, 0.1);
-                                        border: 1px solid rgba(255, 255, 255, 0.2);
-                                        border-radius: 50%;
-                                        color: ${textColor};
-                                        text-decoration: none;
-                                        transition: all 0.3s ease;
-                                        font-size: 1.2rem;
-                                    " onmouseover="this.style.transform='translateY(-2px) scale(1.1)'; this.style.background='${accentColor}'" 
-                                       onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.background='rgba(255, 255, 255, 0.1)'">
-                                        ${platformData.icon}
-                                    </a>
-                                `;
-                            }).join('')}
-                        </div>
-                    ` : ''}
                 </div>
             </div>
         `;
@@ -498,7 +560,8 @@ class LinkBioEditor {
             dark: '#0a0a0a',
             nature: 'linear-gradient(135deg, #2d5016 0%, #4a7c59 50%, #8fbc8f 100%)',
             vintage: 'linear-gradient(135deg, #8b4513 0%, #cd853f 50%, #daa520 100%)',
-            glass: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+            glass: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            lensa: '#6A0DAD'
         };
         return backgrounds[theme] || '#ffffff';
     }
@@ -511,7 +574,8 @@ class LinkBioEditor {
             dark: '#00ffff',
             nature: '#228b22',
             vintage: '#cd853f',
-            glass: '#6366f1'
+            glass: '#6366f1',
+            lensa: '#E066FF'
         };
         return accents[theme] || '#3b82f6';
     }
@@ -524,7 +588,8 @@ class LinkBioEditor {
             dark: '#00ffff',
             nature: '#f5f5dc',
             vintage: '#fff8dc',
-            glass: '#ffffff'
+            glass: '#ffffff',
+            lensa: '#ffffff'
         };
         return texts[theme] || '#1e293b';
     }
@@ -537,21 +602,26 @@ class LinkBioEditor {
             dark: '#ff00ff',
             nature: '#90ee90',
             vintage: '#ffd700',
-            glass: '#e0e7ff'
+            glass: '#e0e7ff',
+            lensa: '#E066FF'
         };
         return links[theme] || '#1e40af';
     }
     
     getSocialPlatformData(platform) {
         const platforms = {
-            twitter: { icon: '🐦', url: 'https://twitter.com/' },
-            github: { icon: '🐙', url: 'https://github.com/' },
-            linkedin: { icon: '💼', url: 'https://linkedin.com/in/' },
-            youtube: { icon: '📺', url: 'https://youtube.com/@' },
-            discord: { icon: '💬', url: 'https://discord.gg/' },
-            instagram: { icon: '📷', url: 'https://instagram.com/' },
-            tiktok: { icon: '🎵', url: 'https://tiktok.com/@' },
-            twitch: { icon: '🎮', url: 'https://twitch.tv/' }
+            twitter: { icon: '🐦', url: 'https://twitter.com/', iconFile: 'twitter.svg' },
+            github: { icon: '🐙', url: 'https://github.com/', iconFile: 'github.svg' },
+            linkedin: { icon: '💼', url: 'https://linkedin.com/in/', iconFile: 'linkedin.svg' },
+            youtube: { icon: '📺', url: 'https://youtube.com/@', iconFile: 'youtube.svg' },
+            discord: { icon: '💬', url: 'https://discord.gg/', iconFile: 'discord.svg' },
+            instagram: { icon: '📷', url: 'https://instagram.com/', iconFile: 'instagram.svg' },
+            tiktok: { icon: '🎵', url: 'https://tiktok.com/@', iconFile: 'tik-tok.svg' },
+            twitch: { icon: '🎮', url: 'https://twitch.tv/', iconFile: 'twitch.svg' },
+            reddit: { icon: '🔴', url: 'https://reddit.com/user/', iconFile: 'reddit.svg' },
+            snapchat: { icon: '👻', url: 'https://snapchat.com/add/', iconFile: 'snapchat.svg' },
+            telegram: { icon: '✈️', url: 'https://t.me/', iconFile: 'telegram.svg' },
+            whatsapp: { icon: '💬', url: 'https://wa.me/', iconFile: 'whatsapp.svg' }
         };
         return platforms[platform] || { icon: '🔗', url: '#' };
     }
@@ -734,6 +804,11 @@ class LinkBioEditor {
             this.renderGradientColors();
         }
         
+        // Load container background
+        const containerBackground = this.config.customization?.containerBackground || '#ffffff';
+        document.getElementById('custom-container-background').value = containerBackground;
+        document.getElementById('custom-container-background-hex').value = containerBackground;
+        
         this.toggleBackgroundSections();
         this.updateGradientPreview();
         this.updateBackgroundPreview();
@@ -812,15 +887,30 @@ class LinkBioEditor {
     exportConfig() {
         // Only include customizations if they're enabled
         if (this.customizationEnabled) {
+            // Initialize customization object if it doesn't exist
+            if (!this.config.customization) {
+                this.config.customization = {};
+            }
+            
+            // Set enabled flag
+            this.config.customization.enabled = true;
+            
             // Update the config with current background settings
             if (this.backgroundType === 'solid') {
                 this.config.customization.background = document.getElementById('custom-background-solid').value;
             } else {
                 this.config.customization.background = this.generateGradientString();
             }
+            
+            // Add container background if specified
+            const containerBackground = document.getElementById('custom-container-background').value;
+            if (containerBackground && containerBackground !== '#ffffff') {
+                this.config.customization.containerBackground = containerBackground;
+            }
         } else {
             // Clear customizations when using theme defaults
-            this.config.customization = {};
+            // Set enabled to false to explicitly disable
+            this.config.customization = { enabled: false };
         }
         
         const configJSON = JSON.stringify(this.config, null, 2);

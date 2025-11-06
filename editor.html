@@ -547,6 +547,16 @@
                 </div>
             </div>
             
+            <!-- Icon Set Selection -->
+            <div class="form-group">
+                <label class="form-label">Icon Set</label>
+                <select class="form-select" id="icon-set-select">
+                    <option value="default">Default</option>
+                    <!-- More icon sets can be added here as they become available -->
+                </select>
+                <small class="form-help">Choose which icon set to use for social media icons</small>
+            </div>
+            
             <!-- Profile Section -->
             <div class="form-group">
                 <h3 style="margin-bottom: 1rem; color: #374151;">Profile Information</h3>
@@ -617,7 +627,10 @@
             <!-- Customization Section -->
             <div class="form-group">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                    <h3 style="color: #374151; margin: 0;">Customization</h3>
+                    <div>
+                        <h3 style="color: #374151; margin: 0;">Customization</h3>
+                        <small style="color: #6b7280; font-size: 0.75rem;">Overrides theme colors when enabled</small>
+                    </div>
                     <div class="customization-toggle">
                         <label class="toggle-switch">
                             <input type="checkbox" id="enable-customization">
@@ -700,6 +713,16 @@
                             <label class="form-label">Gradient Preview</label>
                             <div id="gradient-preview" class="gradient-preview-large"></div>
                         </div>
+                    </div>
+
+                    <!-- Container Background -->
+                    <div class="form-group">
+                        <label class="form-label">Container Background</label>
+                        <div class="color-picker-container">
+                            <input type="color" class="color-input" id="custom-container-background" value="#ffffff">
+                            <input type="text" class="form-input" id="custom-container-background-hex" placeholder="#ffffff" style="margin-left: 0.5rem;">
+                        </div>
+                        <small class="form-help">Background color for the main content card</small>
                     </div>
 
                     <!-- Other Colors -->

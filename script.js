@@ -88,14 +88,18 @@ class UniversalLinkRenderer {
         const app = document.getElementById('app');
         if (!app) return;
 
+        // Get the parent container
+        const parentContainer = app.querySelector('.parent-container');
+        if (!parentContainer) return;
+
         // Clear existing content
-        app.innerHTML = '';
+        parentContainer.innerHTML = '';
 
         // Create main container
         const container = document.createElement('div');
         container.className = 'container';
 
-        // Render profile section
+        // Render profile section (includes social icons)
         if (this.config.profile) {
             container.appendChild(this.renderProfile());
         }
@@ -105,15 +109,10 @@ class UniversalLinkRenderer {
             container.appendChild(this.renderLinks());
         }
 
-        // Render social section
-        if (this.config.social) {
-            container.appendChild(this.renderSocial());
-        }
-
         // Apply customizations
         this.applyCustomizations();
 
-        app.appendChild(container);
+        parentContainer.appendChild(container);
     }
 
     renderProfile() {
@@ -144,6 +143,12 @@ class UniversalLinkRenderer {
             title.className = 'title';
             title.textContent = profile.title;
             profileSection.appendChild(title);
+        }
+
+        // Social icons (after title, before bio)
+        if (this.config.social) {
+            const socialSection = this.renderSocial();
+            profileSection.appendChild(socialSection);
         }
 
         // Bio
@@ -216,19 +221,25 @@ class UniversalLinkRenderer {
         socialSection.className = 'social';
 
         const socialPlatforms = {
-            twitter: { icon: '🐦', url: 'https://twitter.com/' },
-            github: { icon: '🐙', url: 'https://github.com/' },
-            linkedin: { icon: '💼', url: 'https://linkedin.com/in/' },
-            youtube: { icon: '📺', url: 'https://youtube.com/@' },
-            discord: { icon: '💬', url: 'https://discord.gg/' },
-            instagram: { icon: '📷', url: 'https://instagram.com/' },
-            tiktok: { icon: '🎵', url: 'https://tiktok.com/@' },
-            twitch: { icon: '🎮', url: 'https://twitch.tv/' }
+            twitter: { icon: '🐦', url: 'https://twitter.com/', iconFile: 'twitter.svg' },
+            github: { icon: '🐙', url: 'https://github.com/', iconFile: 'github.svg' },
+            linkedin: { icon: '💼', url: 'https://linkedin.com/in/', iconFile: 'linkedin.svg' },
+            youtube: { icon: '📺', url: 'https://youtube.com/@', iconFile: 'youtube.svg' },
+            discord: { icon: '💬', url: 'https://discord.gg/', iconFile: 'discord.svg' },
+            instagram: { icon: '📷', url: 'https://instagram.com/', iconFile: 'instagram.svg' },
+            tiktok: { icon: '🎵', url: 'https://tiktok.com/@', iconFile: 'tik-tok.svg' },
+            twitch: { icon: '🎮', url: 'https://twitch.tv/', iconFile: 'twitch.svg' },
+            reddit: { icon: '🔴', url: 'https://reddit.com/user/', iconFile: 'reddit.svg' },
+            snapchat: { icon: '👻', url: 'https://snapchat.com/add/', iconFile: 'snapchat.svg' },
+            telegram: { icon: '✈️', url: 'https://t.me/', iconFile: 'telegram.svg' },
+            whatsapp: { icon: '💬', url: 'https://wa.me/', iconFile: 'whatsapp.svg' }
         };
+
+        const iconSet = this.config.iconSet || 'default';
 
         Object.entries(this.config.social).forEach(([platform, handle]) => {
             if (handle && socialPlatforms[platform]) {
-                const socialLink = this.createSocialLink(platform, handle, socialPlatforms[platform]);
+                const socialLink = this.createSocialLink(platform, handle, socialPlatforms[platform], iconSet);
                 socialSection.appendChild(socialLink);
             }
         });
@@ -236,35 +247,102 @@ class UniversalLinkRenderer {
         return socialSection;
     }
 
-    createSocialLink(platform, handle, platformData) {
+    createSocialLink(platform, handle, platformData, iconSet = 'default') {
         const link = document.createElement('a');
         link.className = 'social-link';
         link.href = `${platformData.url}${handle}`;
         link.target = '_blank';
         link.rel = 'noopener noreferrer';
         link.setAttribute('aria-label', `Visit ${platform} profile`);
-        link.textContent = platformData.icon;
+        
+        // Try to load SVG icon, fallback to emoji
+        if (platformData.iconFile && iconSet) {
+            const iconPath = `./icons/${iconSet}/${platformData.iconFile}`;
+            const img = document.createElement('img');
+            img.src = iconPath;
+            img.alt = platform;
+            img.className = 'social-icon-img';
+            img.onerror = () => {
+                // Fallback to emoji if icon fails to load
+                img.style.display = 'none';
+                link.textContent = platformData.icon;
+            };
+            link.appendChild(img);
+        } else {
+            // Fallback to emoji
+            link.textContent = platformData.icon;
+        }
 
         return link;
     }
 
     applyCustomizations() {
-        if (!this.config.customization) return;
+        // Only apply customizations if they exist and are enabled
+        // Customization overrides theme colors when enabled
+        if (!this.config.customization) {
+            // Clear any previously applied customizations
+            this.clearCustomizations();
+            return;
+        }
+        
+        // Check if customization is enabled (default to true if not specified for backward compatibility)
+        const isEnabled = this.config.customization.enabled !== false;
+        if (!isEnabled) {
+            // Clear any previously applied customizations
+            this.clearCustomizations();
+            return;
+        }
 
         const root = document.documentElement;
         const customization = this.config.customization;
 
-        // Apply CSS custom properties
+        // Apply CSS custom properties (these override theme CSS variables)
         Object.entries(customization).forEach(([key, value]) => {
+            // Skip the 'enabled' flag
+            if (key === 'enabled') return;
+            
             if (value) {
                 const cssVar = `--${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
                 root.style.setProperty(cssVar, value);
             }
         });
 
-        // Apply background to body if specified
+        // Apply main background to parent container (outer background)
         if (customization.background) {
-            document.body.style.background = customization.background;
+            const parentContainer = document.querySelector('.parent-container');
+            if (parentContainer) {
+                parentContainer.style.background = customization.background;
+            }
+        }
+
+        // Apply container background if specified
+        if (customization.containerBackground) {
+            const container = document.querySelector('.container');
+            if (container) {
+                container.style.background = customization.containerBackground;
+            }
+        }
+    }
+
+    clearCustomizations() {
+        // Clear all CSS custom properties that might have been set by customization
+        const root = document.documentElement;
+        const customizationKeys = ['background', 'accentColor', 'textColor', 'linkColor', 'containerBackground'];
+        
+        customizationKeys.forEach(key => {
+            const cssVar = `--${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
+            root.style.removeProperty(cssVar);
+        });
+
+        // Clear inline styles from elements
+        const parentContainer = document.querySelector('.parent-container');
+        if (parentContainer) {
+            parentContainer.style.background = '';
+        }
+
+        const container = document.querySelector('.container');
+        if (container) {
+            container.style.background = '';
         }
     }
 
