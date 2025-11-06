@@ -19,7 +19,8 @@ class LinkBioEditor {
             { name: 'lensa', display: 'Lensa', color: '#6A0DAD' },
             { name: 'glassy', display: 'Glassy', color: '#1e1e1e' },
             { name: 'minimalist', display: 'Minimalist', color: '#f5f5f5' },
-            { name: 'linktree', display: 'Linktree', color: '#e8f5e9' }
+            { name: 'linktree', display: 'Linktree', color: '#e8f5e9' },
+            { name: 'unfold', display: 'Unfold', color: '#e8f5e9' }
         ];
         this.currentTheme = 'minimal';
         this.previewTimeout = null;
@@ -395,9 +396,10 @@ class LinkBioEditor {
         const isGlassyTheme = theme === 'glassy';
         const isMinimalistTheme = theme === 'minimalist';
         const isLinktreeTheme = theme === 'linktree';
+        const isUnfoldTheme = theme === 'unfold';
         let containerBackground, containerStyle;
         
-        if (isLensaTheme || isGlassyTheme || isLinktreeTheme) {
+        if (isLensaTheme || isGlassyTheme || isLinktreeTheme || isUnfoldTheme) {
             containerBackground = 'transparent';
             containerStyle = 'background: transparent; box-shadow: none;';
         } else if (isMinimalistTheme) {
@@ -571,7 +573,8 @@ class LinkBioEditor {
             lensa: '#6A0DAD',
             glassy: '#0a0a0a',
             minimalist: '#f5f5f5',
-            linktree: '#e8f5e9'
+            linktree: '#e8f5e9',
+            unfold: '#e8f5e9'
         };
         return backgrounds[theme] || '#ffffff';
     }
@@ -588,7 +591,8 @@ class LinkBioEditor {
             lensa: '#E066FF',
             glassy: 'rgba(255, 255, 255, 0.1)',
             minimalist: '#e8e8e8',
-            linktree: '#4caf50'
+            linktree: '#4caf50',
+            unfold: '#4a7c59'
         };
         return accents[theme] || '#3b82f6';
     }
@@ -605,7 +609,8 @@ class LinkBioEditor {
             lensa: '#ffffff',
             glassy: '#ffffff',
             minimalist: '#2a2a2a',
-            linktree: '#000000'
+            linktree: '#000000',
+            unfold: '#000000'
         };
         return texts[theme] || '#1e293b';
     }
@@ -622,7 +627,8 @@ class LinkBioEditor {
             lensa: '#E066FF',
             glassy: 'rgba(255, 255, 255, 0.1)',
             minimalist: '#e8e8e8',
-            linktree: '#000000'
+            linktree: '#000000',
+            unfold: '#000000'
         };
         return links[theme] || '#1e40af';
     }
