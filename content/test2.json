@@ -1,0 +1,37 @@
+{
+  "theme": "lensa",
+  "profile": {
+    "name": "Your Name",
+    "title": "Your Title or Profession",
+    "bio": "Tell people about yourself, your work, or what you're passionate about. This is your chance to make a great first impression!",
+    "avatar": "https://via.placeholder.com/150x150/6366f1/ffffff?text=YOU"
+  },
+  "links": [
+    {
+      "title": "My Website",
+      "url": "https://yourwebsite.com",
+      "icon": "🌐",
+      "description": "Visit my main website"
+    },
+    {
+      "title": "Portfolio",
+      "url": "https://yourportfolio.com",
+      "icon": "💼",
+      "description": "Check out my work"
+    },
+    {
+      "title": "Contact Me",
+      "url": "mailto:your.email@example.com",
+      "icon": "📧",
+      "description": "Get in touch"
+    }
+  ],
+  "social": {
+    "twitter": "yourhandle",
+    "github": "yourhandle",
+    "linkedin": "yourhandle"
+  },
+  "customization": {
+    "enabled": false
+  }
+}

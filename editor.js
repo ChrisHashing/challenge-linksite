@@ -9,24 +9,17 @@ class LinkBioEditor {
     constructor() {
         this.config = this.getDefaultConfig();
         this.themes = [
-            { name: 'minimal', display: 'Minimal', color: '#ffffff' },
-            { name: 'creator', display: 'Creator', color: '#ff6b6b' },
-            { name: 'technicallyweb3', display: 'Web3', color: '#6366f1' },
             { name: 'dark', display: 'Dark', color: '#0a0a0a' },
-            { name: 'nature', display: 'Nature', color: '#228b22' },
-            { name: 'vintage', display: 'Vintage', color: '#cd853f' },
-            { name: 'glass', display: 'Glass', color: '#667eea' },
-            { name: 'lensa', display: 'Lensa', color: '#6A0DAD' },
             { name: 'glassy', display: 'Glassy', color: '#1e1e1e' },
-            { name: 'minimalist', display: 'Minimalist', color: '#f5f5f5' },
-            { name: 'linktree', display: 'Linktree', color: '#e8f5e9' },
-            { name: 'unfold', display: 'Unfold', color: '#e8f5e9' },
             { name: 'glassmorphism', display: 'Glassmorphism', color: '#6366f1' },
-            { name: 'brutalist', display: 'Brutalist', color: '#000000' },
-            { name: 'modern-noise-neutral', display: 'Modern Noise Neutral', color: '#f5f3f0' },
-            { name: 'sunset', display: 'Sunset', color: '#ff9966' }
+            { name: 'lensa', display: 'Lensa', color: '#6A0DAD' },
+            { name: 'tree', display: 'tree', color: '#e8f5e9' },
+            { name: 'minimalist', display: 'Minimalist', color: '#f5f5f5' },
+            { name: 'modern-neutral', display: 'Modern Noise Neutral', color: '#f5f3f0' },
+            { name: 'sunset', display: 'Sunset', color: '#ff9966' },
+            { name: 'unfold', display: 'Unfold', color: '#e8f5e9' }
         ];
-        this.currentTheme = 'minimal';
+        this.currentTheme = 'dark';
         this.previewTimeout = null;
         this.gradientColors = ['#667eea', '#764ba2'];
         this.gradientDirection = 'to right';
@@ -364,9 +357,177 @@ class LinkBioEditor {
         }
         
         this.previewTimeout = setTimeout(() => {
-            const previewContainer = document.getElementById('preview-iframe');
-            previewContainer.innerHTML = this.generatePreviewContent();
+            const previewFrame = document.getElementById('preview-iframe');
+            if (!previewFrame) return;
+            
+            // Generate full HTML document for iframe
+            const iframeContent = this.generateIframeContent();
+            const iframeDoc = previewFrame.contentDocument || previewFrame.contentWindow.document;
+            iframeDoc.open();
+            iframeDoc.write(iframeContent);
+            iframeDoc.close();
         }, 150);
+    }
+    
+    generateIframeContent() {
+        const config = this.config;
+        const theme = config.theme || 'dark';
+        const themePath = `./styles/${theme}.css`;
+        
+        // Get theme colors
+        const customizations = config.customization || {};
+        let background, accentColor, textColor, linkColor;
+        
+        if (this.customizationEnabled) {
+            if (this.backgroundType === 'solid') {
+                background = document.getElementById('custom-background-solid')?.value || customizations.background || this.getThemeDefaultBackground(theme);
+            } else {
+                background = this.generateGradientString();
+            }
+            accentColor = customizations.accentColor || this.getThemeDefaultAccent(theme);
+            textColor = customizations.textColor || this.getThemeDefaultText(theme);
+            linkColor = customizations.linkColor || this.getThemeDefaultLink(theme);
+        } else {
+            background = this.getThemeDefaultBackground(theme);
+            accentColor = this.getThemeDefaultAccent(theme);
+            textColor = this.getThemeDefaultText(theme);
+            linkColor = this.getThemeDefaultLink(theme);
+        }
+        
+        // Get container background
+        const isLensaTheme = theme === 'lensa';
+        const isGlassyTheme = theme === 'glassy';
+        const isDarkTheme = theme === 'dark';
+        const isMinimalistTheme = theme === 'minimalist';
+        const istreeTheme = theme === 'tree';
+        const isUnfoldTheme = theme === 'unfold';
+        const isGlassmorphismTheme = theme === 'glassmorphism';
+        const isModernNoiseNeutralTheme = theme === 'modern-neutral';
+        const isSunsetTheme = theme === 'sunset';
+        let containerBackground, containerStyle;
+        
+        if (isLensaTheme || isGlassyTheme || istreeTheme || isUnfoldTheme || isGlassmorphismTheme || isModernNoiseNeutralTheme || isSunsetTheme) {
+            containerBackground = 'transparent';
+            containerStyle = 'background: transparent; box-shadow: none;';
+        } else if (isMinimalistTheme) {
+            containerBackground = '#e8e8e8';
+            containerStyle = `background: ${containerBackground}; border-radius: 0;`;
+        } else {
+            containerBackground = this.customizationEnabled ? 
+                (document.getElementById('custom-container-background')?.value || customizations.containerBackground || '#ffffff') : 
+                '#ffffff';
+            containerStyle = `background: ${containerBackground}; border-radius: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);`;
+        }
+        
+        // Generate content using the same structure as index.html
+        const content = this.generatePreviewContentHTML(config, theme, background, accentColor, textColor, linkColor, containerStyle);
+        
+        return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preview</title>
+    <link rel="stylesheet" href="${themePath}">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        .parent-container {
+            width: 100%;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="parent-container">
+        ${content}
+    </div>
+</body>
+</html>`;
+    }
+    
+    generatePreviewContentHTML(config, theme, background, accentColor, textColor, linkColor, containerStyle) {
+        return `
+            <div class="container">
+                <!-- Profile Section -->
+                ${config.profile ? `
+                    <div class="profile">
+                        ${config.profile.avatar ? `
+                            <img src="${config.profile.avatar}" alt="${config.profile.name || 'Avatar'}" class="avatar">
+                        ` : ''}
+                        ${config.profile.name ? `
+                            <h1 class="name">${config.profile.name}</h1>
+                        ` : ''}
+                        ${config.profile.title ? `
+                            <h2 class="title">${config.profile.title}</h2>
+                        ` : ''}
+                        
+                        <!-- Social Section -->
+                        ${config.social && Object.keys(config.social).length > 0 ? `
+                            <div class="social">
+                                ${Object.entries(config.social).map(([platform, handle]) => {
+                                    if (!handle) return '';
+                                    const platformData = this.getSocialPlatformData(platform);
+                                    const iconSet = config.iconSet || 'default';
+                                    const iconPath = platformData.iconFile ? `./icons/${iconSet}/${platformData.iconFile}` : null;
+                                    return `
+                                        <a href="${platformData.url}${handle}" 
+                                           target="_blank" 
+                                           rel="noopener noreferrer" 
+                                           class="social-link"
+                                           aria-label="Visit ${platform} profile">
+                                            ${iconPath ? `
+                                                <img src="${iconPath}" 
+                                                     alt="${platform}" 
+                                                     class="social-icon-img"
+                                                     onerror="this.style.display='none'; this.parentElement.textContent='${platformData.icon}'">
+                                            ` : platformData.icon}
+                                        </a>
+                                    `;
+                                }).join('')}
+                            </div>
+                        ` : ''}
+                        
+                        ${config.profile.bio ? `
+                            <p class="bio">${config.profile.bio}</p>
+                        ` : ''}
+                    </div>
+                ` : ''}
+                
+                <!-- Links Section -->
+                ${config.links && config.links.length > 0 ? `
+                    <div class="links">
+                        ${config.links.map((link, index) => `
+                            <div class="link-item" style="animation-delay: ${index * 0.1}s">
+                                <a href="${link.url || '#'}" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer" 
+                                   class="link-content"
+                                   aria-label="Visit ${link.title}">
+                                    <div class="link-text">
+                                        <div class="link-title">${link.title || 'Link Title'}</div>
+                                        ${link.description ? `
+                                            <div class="link-description">${link.description}</div>
+                                        ` : ''}
+                                    </div>
+                                </a>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+            </div>
+        `;
     }
 
     generatePreviewContent() {
@@ -398,16 +559,16 @@ class LinkBioEditor {
         // Get container background
         const isLensaTheme = theme === 'lensa';
         const isGlassyTheme = theme === 'glassy';
+        const isDarkTheme = theme === 'dark';
         const isMinimalistTheme = theme === 'minimalist';
-        const isLinktreeTheme = theme === 'linktree';
+        const istreeTheme = theme === 'tree';
         const isUnfoldTheme = theme === 'unfold';
         const isGlassmorphismTheme = theme === 'glassmorphism';
-        const isBrutalistTheme = theme === 'brutalist';
-        const isModernNoiseNeutralTheme = theme === 'modern-noise-neutral';
+        const isModernNoiseNeutralTheme = theme === 'modern-neutral';
         const isSunsetTheme = theme === 'sunset';
         let containerBackground, containerStyle;
         
-        if (isLensaTheme || isGlassyTheme || isLinktreeTheme || isUnfoldTheme || isGlassmorphismTheme || isBrutalistTheme || isModernNoiseNeutralTheme || isSunsetTheme) {
+        if (isLensaTheme || isGlassyTheme || istreeTheme || isUnfoldTheme || isGlassmorphismTheme || isModernNoiseNeutralTheme || isSunsetTheme) {
             containerBackground = 'transparent';
             containerStyle = 'background: transparent; box-shadow: none;';
         } else if (isMinimalistTheme) {
@@ -420,27 +581,26 @@ class LinkBioEditor {
             containerStyle = `background: ${containerBackground}; border-radius: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);`;
         }
         
-        return `
-            <div class="preview-content" style="
-                background: ${background};
-                color: ${textColor};
-                min-height: 600px;
-                padding: 1.25rem;
-                font-family: 'Inter', sans-serif;
-                position: relative;
-                overflow: hidden;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            ">
-                <div style="
-                    width: 100%;
-                    max-width: 600px;
-                    margin: 0 auto;
-                    ${containerStyle}
-                    padding: 2rem;
-                    min-height: calc(100vh - 4rem);
+        // For themes that need parent-container structure
+        const needsParentContainer = isGlassyTheme || isDarkTheme || istreeTheme;
+        
+        if (needsParentContainer) {
+            return `
+                <div class="parent-container" style="
+                    background: ${background};
+                    min-height: 600px;
+                    padding: 2rem 1rem;
+                    box-sizing: border-box;
+                    position: relative;
                 ">
+                    <div class="container" style="
+                        width: 100%;
+                        max-width: 600px;
+                        margin: 0 auto;
+                        ${containerStyle}
+                        padding: 2rem;
+                        min-height: auto;
+                    ">
                     <!-- Profile Section -->
                     <div style="text-align: center; margin-bottom: 2rem;">
                         ${config.profile?.avatar ? `
@@ -564,6 +724,149 @@ class LinkBioEditor {
                             `).join('')}
                         </div>
                     ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Default preview structure for other themes
+        return `
+            <div class="preview-content" style="
+                background: ${background};
+                color: ${textColor};
+                min-height: 600px;
+                padding: 1.25rem;
+                font-family: 'Inter', sans-serif;
+                position: relative;
+                overflow: hidden;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            ">
+                <div style="
+                    width: 100%;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    ${containerStyle}
+                    padding: 2rem;
+                    min-height: calc(100vh - 4rem);
+                ">
+                    <!-- Profile Section -->
+                    <div style="text-align: center; margin-bottom: 2rem;">
+                        ${config.profile?.avatar ? `
+                            <img src="${config.profile.avatar}" alt="Avatar" style="
+                                width: 100px;
+                                height: 100px;
+                                border-radius: 50%;
+                                margin-bottom: 1rem;
+                                border: 2px solid ${accentColor};
+                                object-fit: cover;
+                            ">
+                        ` : ''}
+                        ${config.profile?.name ? `
+                            <h1 style="
+                                font-size: 1.75rem;
+                                font-weight: 700;
+                                margin-bottom: 0.5rem;
+                                color: ${textColor};
+                            ">${config.profile.name}</h1>
+                        ` : ''}
+                        ${config.profile?.title ? `
+                            <h2 style="
+                                font-size: 1rem;
+                                color: ${textColor};
+                                opacity: 0.8;
+                                margin-bottom: 1rem;
+                                font-weight: 500;
+                            ">${config.profile.title}</h2>
+                        ` : ''}
+                        
+                        <!-- Social Section (after title, before bio) -->
+                        ${Object.keys(config.social || {}).length > 0 ? `
+                            <div style="
+                                display: flex;
+                                justify-content: center;
+                                gap: 1rem;
+                                margin: 1rem 0;
+                            ">
+                                ${Object.entries(config.social).map(([platform, handle]) => {
+                                    if (!handle) return '';
+                                    const platformData = this.getSocialPlatformData(platform);
+                                    const iconSet = config.iconSet || 'default';
+                                    const iconPath = platformData.iconFile ? `./icons/${iconSet}/${platformData.iconFile}` : null;
+                                    return `
+                                        <a href="${platformData.url}${handle}" style="
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            width: 40px;
+                                            height: 40px;
+                                            background: rgba(255, 255, 255, 0.1);
+                                            border: 1px solid rgba(255, 255, 255, 0.2);
+                                            border-radius: 50%;
+                                            color: ${textColor};
+                                            text-decoration: none;
+                                            transition: all 0.3s ease;
+                                            font-size: 1rem;
+                                        " onmouseover="this.style.transform='translateY(-2px) scale(1.1)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.15)'" 
+                                           onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='none'">
+                                            ${iconPath ? `<img src="${iconPath}" alt="${platform}" style="width: 20px; height: 20px; object-fit: contain;" onerror="this.style.display='none'; this.parentElement.textContent='${platformData.icon}'">` : platformData.icon}
+                                        </a>
+                                    `;
+                                }).join('')}
+                            </div>
+                        ` : ''}
+                        
+                        ${config.profile?.bio ? `
+                            <p style="
+                                font-size: 0.9rem;
+                                color: ${textColor};
+                                opacity: 0.8;
+                                line-height: 1.6;
+                                max-width: 320px;
+                                margin: 0 auto;
+                            ">${config.profile.bio}</p>
+                        ` : ''}
+                    </div>
+                    
+                    <!-- Links Section -->
+                    ${config.links && config.links.length > 0 ? `
+                        <div style="margin-bottom: 2rem;">
+                            ${config.links.map(link => `
+                                <div style="
+                                    background: ${linkColor};
+                                    border-radius: 12px;
+                                    margin-bottom: 1rem;
+                                    padding: 1.25rem;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    text-decoration: none;
+                                    color: inherit;
+                                ">
+                                    <div style="
+                                        text-align: center;
+                                        width: 100%;
+                                    ">
+                                        <div style="
+                                            font-size: 1rem;
+                                            font-weight: 600;
+                                            margin-bottom: 0.25rem;
+                                            color: ${textColor};
+                                        ">${link.title || 'Link Title'}</div>
+                                        ${link.description ? `
+                                            <div style="
+                                                font-size: 0.85rem;
+                                                color: ${textColor};
+                                                opacity: 0.8;
+                                                line-height: 1.4;
+                                            ">${link.description}</div>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
                 </div>
             </div>
         `;
@@ -571,88 +874,60 @@ class LinkBioEditor {
     
     getThemeDefaultBackground(theme) {
         const backgrounds = {
-            minimal: '#ffffff',
-            creator: 'linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1)',
-            technicallyweb3: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            dark: '#1a1a1a',
-            nature: 'linear-gradient(135deg, #2d5016 0%, #4a7c59 50%, #8fbc8f 100%)',
-            vintage: 'linear-gradient(135deg, #8b4513 0%, #cd853f 50%, #daa520 100%)',
-            glass: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            lensa: '#6A0DAD',
+            dark: '#111111',
             glassy: '#0a0a0a',
-            minimalist: '#f5f5f5',
-            linktree: '#e8f5e9',
-            unfold: '#e8f5e9',
             glassmorphism: 'linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%)',
-            brutalist: '#000000',
-            'modern-noise-neutral': '#f5f3f0',
-            sunset: 'linear-gradient(135deg, #ff9966 0%, #ff5e62 100%)'
+            lensa: '#6A0DAD',
+            tree: '#e8f5e9',
+            minimalist: '#f5f5f5',
+            'modern-neutral': '#f5f3f0',
+            sunset: 'linear-gradient(135deg, #ff9966 0%, #ff5e62 100%)',
+            unfold: '#e8f5e9'
         };
         return backgrounds[theme] || '#ffffff';
     }
     
     getThemeDefaultAccent(theme) {
         const accents = {
-            minimal: '#3b82f6',
-            creator: '#ff6b6b',
-            technicallyweb3: '#6366f1',
             dark: '#000000',
-            nature: '#228b22',
-            vintage: '#cd853f',
-            glass: '#6366f1',
-            lensa: '#E066FF',
             glassy: 'rgba(255, 255, 255, 0.1)',
-            minimalist: '#e8e8e8',
-            linktree: '#4caf50',
-            unfold: '#4a7c59',
             glassmorphism: '#00f5ff',
-            brutalist: '#00ff00',
-            'modern-noise-neutral': '#e8e8e8',
-            sunset: '#ff9966'
+            lensa: '#E066FF',
+            tree: '#4caf50',
+            minimalist: '#e8e8e8',
+            'modern-neutral': '#e8e8e8',
+            sunset: '#ff9966',
+            unfold: '#4a7c59'
         };
         return accents[theme] || '#3b82f6';
     }
     
     getThemeDefaultText(theme) {
         const texts = {
-            minimal: '#1e293b',
-            creator: '#ffffff',
-            technicallyweb3: '#ffffff',
             dark: '#ffffff',
-            nature: '#f5f5dc',
-            vintage: '#fff8dc',
-            glass: '#ffffff',
-            lensa: '#ffffff',
             glassy: '#ffffff',
-            minimalist: '#2a2a2a',
-            linktree: '#000000',
-            unfold: '#000000',
             glassmorphism: 'rgba(255, 255, 255, 0.9)',
-            brutalist: '#ffffff',
-            'modern-noise-neutral': '#4a4a4a',
-            sunset: '#2c1810'
+            lensa: '#ffffff',
+            tree: '#000000',
+            minimalist: '#2a2a2a',
+            'modern-neutral': '#4a4a4a',
+            sunset: '#2c1810',
+            unfold: '#000000'
         };
         return texts[theme] || '#1e293b';
     }
     
     getThemeDefaultLink(theme) {
         const links = {
-            minimal: '#1e40af',
-            creator: '#4ecdc4',
-            technicallyweb3: '#fbbf24',
             dark: '#000000',
-            nature: '#90ee90',
-            vintage: '#ffd700',
-            glass: '#e0e7ff',
-            lensa: '#E066FF',
             glassy: 'rgba(255, 255, 255, 0.1)',
-            minimalist: '#e8e8e8',
-            linktree: '#000000',
-            unfold: '#000000',
             glassmorphism: 'rgba(255, 255, 255, 0.9)',
-            brutalist: '#ffffff',
-            'modern-noise-neutral': '#4a4a4a',
-            sunset: '#2c1810'
+            lensa: '#E066FF',
+            tree: '#000000',
+            minimalist: '#e8e8e8',
+            'modern-neutral': '#4a4a4a',
+            sunset: '#2c1810',
+            unfold: '#000000'
         };
         return links[theme] || '#1e40af';
     }

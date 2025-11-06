@@ -35,7 +35,7 @@ class UniversalLinkRenderer {
 
     async loadConfiguration() {
         try {
-            const response = await fetch('./content/data.json');
+            const response = await fetch('./content/test1.json');
             if (!response.ok) {
                 throw new Error(`Failed to load configuration: ${response.status}`);
             }
