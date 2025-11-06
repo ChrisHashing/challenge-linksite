@@ -1,5 +1,5 @@
 {
-  "theme": "dark",
+  "theme": "tree",
   "iconSet": "default",
   "profile": {
     "name": "Your Name",
@@ -11,8 +11,7 @@
     {
       "title": "My Website",
       "url": "https://yourwebsite.com",
-      "icon": "🌐",
-      "description": "Visit my main website"
+      "icon": "🌐"
     },
     {
       "title": "Portfolio",
