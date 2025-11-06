@@ -20,7 +20,11 @@ class LinkBioEditor {
             { name: 'glassy', display: 'Glassy', color: '#1e1e1e' },
             { name: 'minimalist', display: 'Minimalist', color: '#f5f5f5' },
             { name: 'linktree', display: 'Linktree', color: '#e8f5e9' },
-            { name: 'unfold', display: 'Unfold', color: '#e8f5e9' }
+            { name: 'unfold', display: 'Unfold', color: '#e8f5e9' },
+            { name: 'glassmorphism', display: 'Glassmorphism', color: '#6366f1' },
+            { name: 'brutalist', display: 'Brutalist', color: '#000000' },
+            { name: 'modern-noise-neutral', display: 'Modern Noise Neutral', color: '#f5f3f0' },
+            { name: 'sunset', display: 'Sunset', color: '#ff9966' }
         ];
         this.currentTheme = 'minimal';
         this.previewTimeout = null;
@@ -397,9 +401,13 @@ class LinkBioEditor {
         const isMinimalistTheme = theme === 'minimalist';
         const isLinktreeTheme = theme === 'linktree';
         const isUnfoldTheme = theme === 'unfold';
+        const isGlassmorphismTheme = theme === 'glassmorphism';
+        const isBrutalistTheme = theme === 'brutalist';
+        const isModernNoiseNeutralTheme = theme === 'modern-noise-neutral';
+        const isSunsetTheme = theme === 'sunset';
         let containerBackground, containerStyle;
         
-        if (isLensaTheme || isGlassyTheme || isLinktreeTheme || isUnfoldTheme) {
+        if (isLensaTheme || isGlassyTheme || isLinktreeTheme || isUnfoldTheme || isGlassmorphismTheme || isBrutalistTheme || isModernNoiseNeutralTheme || isSunsetTheme) {
             containerBackground = 'transparent';
             containerStyle = 'background: transparent; box-shadow: none;';
         } else if (isMinimalistTheme) {
@@ -574,7 +582,11 @@ class LinkBioEditor {
             glassy: '#0a0a0a',
             minimalist: '#f5f5f5',
             linktree: '#e8f5e9',
-            unfold: '#e8f5e9'
+            unfold: '#e8f5e9',
+            glassmorphism: 'linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%)',
+            brutalist: '#000000',
+            'modern-noise-neutral': '#f5f3f0',
+            sunset: 'linear-gradient(135deg, #ff9966 0%, #ff5e62 100%)'
         };
         return backgrounds[theme] || '#ffffff';
     }
@@ -592,7 +604,11 @@ class LinkBioEditor {
             glassy: 'rgba(255, 255, 255, 0.1)',
             minimalist: '#e8e8e8',
             linktree: '#4caf50',
-            unfold: '#4a7c59'
+            unfold: '#4a7c59',
+            glassmorphism: '#00f5ff',
+            brutalist: '#00ff00',
+            'modern-noise-neutral': '#e8e8e8',
+            sunset: '#ff9966'
         };
         return accents[theme] || '#3b82f6';
     }
@@ -610,7 +626,11 @@ class LinkBioEditor {
             glassy: '#ffffff',
             minimalist: '#2a2a2a',
             linktree: '#000000',
-            unfold: '#000000'
+            unfold: '#000000',
+            glassmorphism: 'rgba(255, 255, 255, 0.9)',
+            brutalist: '#ffffff',
+            'modern-noise-neutral': '#4a4a4a',
+            sunset: '#2c1810'
         };
         return texts[theme] || '#1e293b';
     }
@@ -628,7 +648,11 @@ class LinkBioEditor {
             glassy: 'rgba(255, 255, 255, 0.1)',
             minimalist: '#e8e8e8',
             linktree: '#000000',
-            unfold: '#000000'
+            unfold: '#000000',
+            glassmorphism: 'rgba(255, 255, 255, 0.9)',
+            brutalist: '#ffffff',
+            'modern-noise-neutral': '#4a4a4a',
+            sunset: '#2c1810'
         };
         return links[theme] || '#1e40af';
     }
