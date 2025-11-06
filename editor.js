@@ -17,7 +17,8 @@ class LinkBioEditor {
             { name: 'vintage', display: 'Vintage', color: '#cd853f' },
             { name: 'glass', display: 'Glass', color: '#667eea' },
             { name: 'lensa', display: 'Lensa', color: '#6A0DAD' },
-            { name: 'glassy', display: 'Glassy', color: '#1e1e1e' }
+            { name: 'glassy', display: 'Glassy', color: '#1e1e1e' },
+            { name: 'minimalist', display: 'Minimalist', color: '#f5f5f5' }
         ];
         this.currentTheme = 'minimal';
         this.previewTimeout = null;
@@ -391,15 +392,21 @@ class LinkBioEditor {
         // Get container background
         const isLensaTheme = theme === 'lensa';
         const isGlassyTheme = theme === 'glassy';
-        const containerBackground = (isLensaTheme || isGlassyTheme) ? 
-            'transparent' : 
-            (this.customizationEnabled ? 
-                (document.getElementById('custom-container-background')?.value || customizations.containerBackground || '#ffffff') : 
-                '#ffffff');
+        const isMinimalistTheme = theme === 'minimalist';
+        let containerBackground, containerStyle;
         
-        const containerStyle = (isLensaTheme || isGlassyTheme) ? 
-            'background: transparent; box-shadow: none;' : 
-            `background: ${containerBackground}; border-radius: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);`;
+        if (isLensaTheme || isGlassyTheme) {
+            containerBackground = 'transparent';
+            containerStyle = 'background: transparent; box-shadow: none;';
+        } else if (isMinimalistTheme) {
+            containerBackground = '#e8e8e8';
+            containerStyle = `background: ${containerBackground}; border-radius: 0;`;
+        } else {
+            containerBackground = this.customizationEnabled ? 
+                (document.getElementById('custom-container-background')?.value || customizations.containerBackground || '#ffffff') : 
+                '#ffffff';
+            containerStyle = `background: ${containerBackground}; border-radius: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);`;
+        }
         
         return `
             <div class="preview-content" style="
@@ -560,7 +567,8 @@ class LinkBioEditor {
             vintage: 'linear-gradient(135deg, #8b4513 0%, #cd853f 50%, #daa520 100%)',
             glass: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             lensa: '#6A0DAD',
-            glassy: '#0a0a0a'
+            glassy: '#0a0a0a',
+            minimalist: '#f5f5f5'
         };
         return backgrounds[theme] || '#ffffff';
     }
@@ -575,7 +583,8 @@ class LinkBioEditor {
             vintage: '#cd853f',
             glass: '#6366f1',
             lensa: '#E066FF',
-            glassy: 'rgba(255, 255, 255, 0.1)'
+            glassy: 'rgba(255, 255, 255, 0.1)',
+            minimalist: '#e8e8e8'
         };
         return accents[theme] || '#3b82f6';
     }
@@ -590,7 +599,8 @@ class LinkBioEditor {
             vintage: '#fff8dc',
             glass: '#ffffff',
             lensa: '#ffffff',
-            glassy: '#ffffff'
+            glassy: '#ffffff',
+            minimalist: '#2a2a2a'
         };
         return texts[theme] || '#1e293b';
     }
@@ -605,7 +615,8 @@ class LinkBioEditor {
             vintage: '#ffd700',
             glass: '#e0e7ff',
             lensa: '#E066FF',
-            glassy: 'rgba(255, 255, 255, 0.1)'
+            glassy: 'rgba(255, 255, 255, 0.1)',
+            minimalist: '#e8e8e8'
         };
         return links[theme] || '#1e40af';
     }
