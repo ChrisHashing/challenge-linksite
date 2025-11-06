@@ -186,15 +186,7 @@ class UniversalLinkRenderer {
         linkContent.rel = 'noopener noreferrer';
         linkContent.setAttribute('aria-label', `Visit ${link.title}`);
 
-        // Icon
-        if (link.icon) {
-            const icon = document.createElement('div');
-            icon.className = 'link-icon';
-            icon.textContent = link.icon;
-            linkContent.appendChild(icon);
-        }
-
-        // Text content
+        // Text content (centered, no icons)
         const textContent = document.createElement('div');
         textContent.className = 'link-text';
 
