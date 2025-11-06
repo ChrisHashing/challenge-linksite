@@ -16,7 +16,8 @@ class LinkBioEditor {
             { name: 'nature', display: 'Nature', color: '#228b22' },
             { name: 'vintage', display: 'Vintage', color: '#cd853f' },
             { name: 'glass', display: 'Glass', color: '#667eea' },
-            { name: 'lensa', display: 'Lensa', color: '#6A0DAD' }
+            { name: 'lensa', display: 'Lensa', color: '#6A0DAD' },
+            { name: 'glassy', display: 'Glassy', color: '#1e1e1e' }
         ];
         this.currentTheme = 'minimal';
         this.previewTimeout = null;
@@ -389,13 +390,14 @@ class LinkBioEditor {
         
         // Get container background
         const isLensaTheme = theme === 'lensa';
-        const containerBackground = isLensaTheme ? 
+        const isGlassyTheme = theme === 'glassy';
+        const containerBackground = (isLensaTheme || isGlassyTheme) ? 
             'transparent' : 
             (this.customizationEnabled ? 
                 (document.getElementById('custom-container-background')?.value || customizations.containerBackground || '#ffffff') : 
                 '#ffffff');
         
-        const containerStyle = isLensaTheme ? 
+        const containerStyle = (isLensaTheme || isGlassyTheme) ? 
             'background: transparent; box-shadow: none;' : 
             `background: ${containerBackground}; border-radius: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);`;
         
@@ -515,18 +517,14 @@ class LinkBioEditor {
                                         padding: 1.25rem;
                                         display: flex;
                                         align-items: center;
+                                        justify-content: center;
                                         text-decoration: none;
                                         color: inherit;
                                     ">
-                                        ${link.icon ? `
-                                            <div style="
-                                                font-size: 1.5rem;
-                                                margin-right: 1rem;
-                                                width: 40px;
-                                                text-align: center;
-                                            ">${link.icon}</div>
-                                        ` : ''}
-                                        <div style="flex: 1;">
+                                        <div style="
+                                            text-align: center;
+                                            width: 100%;
+                                        ">
                                             <div style="
                                                 font-size: 1rem;
                                                 font-weight: 600;
@@ -561,7 +559,8 @@ class LinkBioEditor {
             nature: 'linear-gradient(135deg, #2d5016 0%, #4a7c59 50%, #8fbc8f 100%)',
             vintage: 'linear-gradient(135deg, #8b4513 0%, #cd853f 50%, #daa520 100%)',
             glass: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            lensa: '#6A0DAD'
+            lensa: '#6A0DAD',
+            glassy: '#0a0a0a'
         };
         return backgrounds[theme] || '#ffffff';
     }
@@ -575,7 +574,8 @@ class LinkBioEditor {
             nature: '#228b22',
             vintage: '#cd853f',
             glass: '#6366f1',
-            lensa: '#E066FF'
+            lensa: '#E066FF',
+            glassy: 'rgba(255, 255, 255, 0.1)'
         };
         return accents[theme] || '#3b82f6';
     }
@@ -589,7 +589,8 @@ class LinkBioEditor {
             nature: '#f5f5dc',
             vintage: '#fff8dc',
             glass: '#ffffff',
-            lensa: '#ffffff'
+            lensa: '#ffffff',
+            glassy: '#ffffff'
         };
         return texts[theme] || '#1e293b';
     }
@@ -603,7 +604,8 @@ class LinkBioEditor {
             nature: '#90ee90',
             vintage: '#ffd700',
             glass: '#e0e7ff',
-            lensa: '#E066FF'
+            lensa: '#E066FF',
+            glassy: 'rgba(255, 255, 255, 0.1)'
         };
         return links[theme] || '#1e40af';
     }
